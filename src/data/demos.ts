@@ -159,7 +159,7 @@ export const demos: DemoVideo[] = [
   {
     id: "moss-vl-layout",
     title: "MOSS-VL文档布局解析",
-    description: "TODO",
+    description: "MOSS-VL Github页面的布局解析。",
     type: "ocr",
     imageUrl: hfUrl("moss-vl.png"),
     thumbnailUrl: "",
@@ -176,7 +176,7 @@ export const demos: DemoVideo[] = [
   {
     id: "moss-paper",
     title: "MOSS论文",
-    description: "TODO",
+    description: "MOSS论文转化为Markdown文档。",
     type: "image",
     imageUrl: hfUrl("moss.png"),
     thumbnailUrl: "",
@@ -246,7 +246,7 @@ export const demos: DemoVideo[] = [
   {
     id: "meilonggua-ocr",
     title: "玫珑瓜饮品广告",
-    description: "这是对于一张玫珑瓜饮品推广海报的OCR",
+    description: "这是对于一张玫珑瓜饮品推广海报的OCR.",
     type: "ocr",
     imageUrl: hfUrl("玫珑瓜.png"),
     thumbnailUrl: "",
@@ -263,7 +263,7 @@ export const demos: DemoVideo[] = [
   {
     id: "restaurant-bill",
     title: "餐厅账单",
-    description: "TODO",
+    description: "餐厅账单关键信息提取。",
     type: "image",
     imageUrl: hfUrl("bill.png"),
     thumbnailUrl: "",
