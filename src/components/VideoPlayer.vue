@@ -79,7 +79,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="overflow-hidden rounded-2xl border border-emerald-200 bg-black shadow-lg flex flex-col relative group h-full">
+  <div class="overflow-hidden rounded-2xl border border-emerald-200 bg-black shadow-lg flex flex-col relative group" :class="type === 'ocr' ? 'h-full' : ''">
     <!-- OCR Image with bbox overlay -->
     <div v-if="type === 'ocr'" ref="containerRef" class="relative w-full flex-1 bg-black flex items-center justify-center min-h-0 overflow-hidden">
       <img
