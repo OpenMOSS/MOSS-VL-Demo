@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <router-link
     :to="{ name: 'demo', params: { id: video.id } }"
-    class="group block overflow-hidden rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-900/10 hover:-translate-y-1"
+    class="group flex h-full flex-col overflow-hidden rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-900/10 hover:-translate-y-1"
   >
     <div class="relative aspect-video overflow-hidden bg-emerald-900/10">
       <!-- Use video element for thumbnail when no image is provided -->
@@ -43,7 +43,7 @@ defineProps<{
         </div>
       </div>
     </div>
-    <div class="p-5">
+    <div class="flex flex-1 flex-col p-5">
       <h3
         class="mb-2 text-lg font-bold text-gray-800 transition-colors group-hover:text-emerald-700"
       >
@@ -52,7 +52,7 @@ defineProps<{
       <p class="mb-4 line-clamp-2 text-sm leading-relaxed text-gray-600">
         {{ video.description }}
       </p>
-      <div class="flex flex-wrap gap-2">
+      <div class="mt-auto flex flex-wrap gap-2">
         <span
           v-for="tag in video.tags"
           :key="tag"
@@ -63,7 +63,7 @@ defineProps<{
         <span
           class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-200"
         >
-          {{ video.questions.length }} questions
+          {{ video.questions.length }} 个问题
         </span>
       </div>
     </div>
