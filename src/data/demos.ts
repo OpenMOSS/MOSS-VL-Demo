@@ -65,7 +65,7 @@ export const demos: DemoVideo[] = [
     videoUrl: hfUrl("大开门.mp4"),
     thumbnailUrl: "",
     thumbnailTime: 25,
-    tags: ["Temporal Grounding", "ZH", "生活", "趣味"],
+    tags: ["Grounding", "ZH", "生活", "趣味"],
     questions: [
       {
         id: "dk-q1",
@@ -82,7 +82,7 @@ export const demos: DemoVideo[] = [
     type: "video",
     videoUrl: hfUrl("台式卤肉饭.mp4"),
     thumbnailUrl: "",
-    tags: ["Temporal Grounding", "ZH", "生活", "菜谱"],
+    tags: ["Grounding", "ZH", "生活", "菜谱"],
     questions: [
       {
         id: "tl-q1",
@@ -122,7 +122,7 @@ export const demos: DemoVideo[] = [
     type: "video",
     videoUrl: hfUrl("扎染.mp4"),
     thumbnailUrl: "",
-    tags: ["Temporal Grounding", "EN", "生活", "手工"],
+    tags: ["Grounding", "EN", "生活", "手工"],
     questions: [
       {
         id: "zr-q1",
