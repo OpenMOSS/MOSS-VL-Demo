@@ -59,6 +59,48 @@ function stopDrag() {
   document.removeEventListener('touchmove', onDrag);
   document.removeEventListener('touchend', stopDrag);
 }
+
+// OCR bbox management — supports both "key": "[bbox]" and <label>key<label><bbox>[bbox]<bbox> formats
+const ocrEntries = computed(() => {
+  if (!video.value || video.value.type !== "ocr" || !video.value.questions.length) return [];
+  const answer = video.value.questions[0].answer;
+  const entries: Array<{ id: string; text: string; bbox: string; rawLine: string }> = [];
+
+  // Format 1: "text": "[bbox]"
+  const regex1 = /"([^"]+)":\s*"(\[[^\]]+\])"/g;
+  let match;
+  while ((match = regex1.exec(answer)) !== null) {
+    entries.push({ id: `e${entries.length}`, text: match[1], bbox: match[2], rawLine: `"${match[1]}": "${match[2]}"` });
+  }
+
+  // Format 2: <label>text<label><bbox>[bbox]<bbox>
+  if (entries.length === 0) {
+    const regex2 = /<label>([^<]+)<label><bbox>(\[[^\]]+\])<bbox>/g;
+    while ((match = regex2.exec(answer)) !== null) {
+      entries.push({ id: `e${entries.length}`, text: match[1], bbox: match[2], rawLine: `<label>${match[1]}<label><bbox>${match[2]}<bbox>` });
+    }
+  }
+
+  return entries;
+});
+
+const activeBboxKeys = ref(new Set<string>());
+
+function toggleBbox(id: string) {
+  const newSet = new Set(activeBboxKeys.value);
+  if (newSet.has(id)) {
+    newSet.delete(id);
+  } else {
+    newSet.add(id);
+  }
+  activeBboxKeys.value = newSet;
+}
+
+const activeBboxes = computed(() => {
+  return ocrEntries.value
+    .filter(entry => activeBboxKeys.value.has(entry.id))
+    .map(entry => ({ text: entry.text, bbox: entry.bbox }));
+});
 </script>
 
 <template>
@@ -131,19 +173,7 @@ function stopDrag() {
                 :poster="video.thumbnailUrl || ''"
                 :title="video.title"
                 :type="video.type"
-                :ocrData="video.type === 'ocr' && video.questions.length > 0 ? (() => {
-                  const data: Record<string, string> = {};
-                  try {
-                    const lines = video.questions[0].answer.split('\n');
-                    for (const line of lines) {
-                      // Remove HTML entities and extract key-value
-                      const cleanLine = line.replace(/&quot;/g, '').replace(/&#34;/g, '');
-                      const match = cleanLine.match(/^(.*?):\s*(\[.*?\])/);
-                      if (match) data[match[1]] = match[2];
-                    }
-                  } catch(e) {}
-                  return data;
-                })() : undefined"
+                :activeBboxes="video.type === 'ocr' ? activeBboxes : undefined"
               />
               </div>
 
@@ -178,7 +208,13 @@ function stopDrag() {
 
           <!-- Right: Chat Panel -->
           <div class="flex min-h-0 flex-1 flex-col bg-white/40">
-            <ChatPanel :questions="video.questions" />
+            <ChatPanel
+              :questions="video.questions"
+              :welcomeLabel="video.type === 'ocr' ? 'Ask the Image' : undefined"
+              :ocrEntries="video.type === 'ocr' ? ocrEntries : undefined"
+              :activeBboxKeys="video.type === 'ocr' ? activeBboxKeys : undefined"
+              @bboxToggle="toggleBbox"
+            />
           </div>
         </div>
     </div>

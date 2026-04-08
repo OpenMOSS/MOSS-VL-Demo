@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
-const route = useRoute();
 </script>
 
 <template>
@@ -13,12 +12,6 @@ const route = useRoute();
       class="flex cursor-pointer items-center gap-4"
       @click="router.push('/')"
     >
-      <img 
-        v-if="route.path !== '/'"
-        src="/moss-vl-logo-textless.png" 
-        alt="Logo" 
-        class="h-10 w-auto object-contain drop-shadow" 
-      />
       <span class="text-2xl font-extrabold tracking-tight text-emerald-800">
         MOSS-VL
       </span>
@@ -29,7 +22,7 @@ const route = useRoute();
       </span>
     </div>
     <a
-      href="https://github.com/fnlp-vision/MOSS-VL"
+      href="https://github.com/OpenMOSS/MOSS-VL"
       target="_blank"
       rel="noopener"
       class="text-base font-semibold text-emerald-700 transition hover:text-emerald-900"

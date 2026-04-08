@@ -35,7 +35,7 @@ export const demos: DemoVideo[] = [
     type: "video",
     videoUrl: hfUrl("华强买瓜.mp4"),
     thumbnailUrl: "",
-    tags: ["VQA", "影视", "对话", "经典"],
+    tags: ["VQA", "ZH", "影视", "对话", "经典"],
     questions: [
       {
         id: "hq-q1",
@@ -71,7 +71,7 @@ export const demos: DemoVideo[] = [
     videoUrl: hfUrl("大开门.mp4"),
     thumbnailUrl: "",
     thumbnailTime: 25,
-    tags: ["Temporal Grounding", "生活", "趣味"],
+    tags: ["Temporal Grounding", "ZH", "生活", "趣味"],
     questions: [
       {
         id: "dk-q1",
@@ -88,7 +88,7 @@ export const demos: DemoVideo[] = [
     type: "video",
     videoUrl: hfUrl("台式卤肉饭.mp4"),
     thumbnailUrl: "",
-    tags: ["Temporal Grounding", "生活", "菜谱"],
+    tags: ["Temporal Grounding", "ZH", "生活", "菜谱"],
     questions: [
       {
         id: "tl-q1",
@@ -105,7 +105,7 @@ export const demos: DemoVideo[] = [
     type: "video",
     videoUrl: hfUrl("罗哥扇耳光.mp4"),
     thumbnailUrl: "",
-    tags: ["VQA", "影视", "经典", "名场面"],
+    tags: ["VQA", "ZH", "影视", "经典", "名场面"],
     questions: [
       {
         id: "lg-q1",
@@ -128,7 +128,7 @@ export const demos: DemoVideo[] = [
     type: "video",
     videoUrl: hfUrl("扎染.mp4"),
     thumbnailUrl: "",
-    tags: ["Temporal Grounding", "生活", "手工"],
+    tags: ["Temporal Grounding", "EN", "生活", "手工"],
     questions: [
       {
         id: "zr-q1",
@@ -146,7 +146,7 @@ export const demos: DemoVideo[] = [
     videoUrl: hfUrl("Star_Wars.mp4"),
     thumbnailUrl: "",
     thumbnailTime: 60,
-    tags: ["VQA", "影视", "经典"],
+    tags: ["VQA", "EN", "影视", "经典"],
     questions: [
       {
         id: "sw-q1",
@@ -157,13 +157,59 @@ export const demos: DemoVideo[] = [
     ],
   },
   {
+    id: "moss-vl-layout",
+    title: "MOSS-VL文档布局解析",
+    description: "TODO",
+    type: "ocr",
+    imageUrl: hfUrl("moss-vl.png"),
+    thumbnailUrl: "",
+    tags: ["OCR", "EN", "Grounding", "文档"],
+    questions: [
+      {
+        id: "mvl-q1",
+        text: "对以上文档进行布局解析",
+        answer:
+          "<label>subtitle<label><bbox>[39,3,470,24]<bbox>\n<label>text<label><bbox>[31,40,956,86]<bbox>\n<label>image<label><bbox>[150,99,852,337]<bbox>\n<label>figure_title<label><bbox>[269,356,727,371]<bbox>\n<label>text<label><bbox>[31,381,945,431]<bbox>\n<label>subtitle<label><bbox>[35,442,203,458]<bbox>\n<label>text<label><bbox>[49,470,955,573]<bbox>\n<label>subtitle<label><bbox>[35,603,147,624]<bbox>\n<label>text<label><bbox>[35,640,185,685]<bbox>\n<label>subtitle<label><bbox>[35,699,299,721]<bbox>\n<label>text<label><bbox>[32,738,806,755]<bbox>\n<label>chart<label><bbox>[163,784,444,954]<bbox>\n<label>chart<label><bbox>[555,784,836,954]<bbox>\n<label>figure_title<label><bbox>[273,980,724,995]<bbox>",
+      },
+    ],
+  },
+  {
+    id: "moss-paper",
+    title: "MOSS论文",
+    description: "TODO",
+    type: "image",
+    imageUrl: hfUrl("moss.png"),
+    thumbnailUrl: "",
+    tags: ["VQA", "EN", "文档", "论文"],
+    questions: [
+      {
+        id: "mp-q1",
+        text: "Convert to markdown",
+        images: [hfUrl("moss.png")],
+        answer:
+          "<table><tr><td>Model</td><td>Release date</td><td>Parameters</td><td>Tokens</td><td>SFT</td><td>RM</td><td>Alignment</td></tr><tr><td>ChatGPT</td><td>2022-11-30</td><td>Unknown</td><td>Unknown</td><td>Human annotation</td><td>Human feedback</td><td>PPO</td></tr><tr><td>MOSS</td><td>2023-2-20</td><td>16B</td><td>680B</td><td>Multi-turn synthetic data*</td><td>AI feedback</td><td>PAT</td></tr><tr><td>LLaMA</td><td>2023-2-24</td><td>7B-65B</td><td>1.0T-1.4T</td><td>-</td><td>-</td><td>-</td></tr><tr><td>Alpaca</td><td>2023-3-13</td><td>Based on LLaMA</td><td>Based on LLaMA</td><td>Single-turn synthetic data</td><td>-</td><td>-</td></tr><tr><td>ChatGLM</td><td>2023-3-13</td><td>6B</td><td>Unknown</td><td>Unknown</td><td>Unknown</td><td>Unknown</td></tr><tr><td>Qwen</td><td>2023-4-11</td><td>7B-14B</td><td>3.0T</td><td>Human annotation</td><td>Human feedback</td><td>PPO</td></tr><tr><td>Falcon</td><td>2023-5-25</td><td>7B-180B</td><td>1.5T-3.5T</td><td>-</td><td>-</td><td>-</td></tr><tr><td>InternLM</td><td>2023-6-7</td><td>7B-104B</td><td>1.6T</td><td>Unknown</td><td>Unknown</td><td>Unknown</td></tr><tr><td>Baichuan</td><td>2023-6-15</td><td>7B</td><td>1.2T</td><td>-</td><td>-</td><td>-</td></tr><tr><td>LLaMA2</td><td>2023-7-18</td><td>7B-70B</td><td>2.0T</td><td>Human annotation</td><td>Human feedback</td><td>PPO &amp; RSFT\u2020</td></tr><tr><td>Qwen</td><td>2023-4-11</td><td>7B-14B</td><td>3.0T</td><td>Human annotation</td><td>Human feedback</td><td>PPO</td></tr></table>\n\n" +
+          "Table 1 A brief comparison of open-sourced LLMs published within 8 months after the release of ChatGPT. \\* means that the multi-turn synthetic data of MOSS is constructed based on real-world user data. \u2020 RSFT means rejection sampling fine-tuning.\n\n" +
+          "Chinese grammar and cultural concepts encoded in web text. To this end, we assign different roles to this two of the most used languages in the world and thus constructed a pre-training dataset as shown in Table 2.\n\n" +
+          "<table><tr><td>Dataset</td><td>Language</td><td>Tokens</td><td>Ratio (%)</td></tr><tr><td>The Pile</td><td>English</td><td>386.3B</td><td>57.1</td></tr><tr><td>Big Query</td><td>Code</td><td>119.2B</td><td>17.6</td></tr><tr><td>Big Python</td><td>Code</td><td>71.7B</td><td>10.6</td></tr><tr><td>Baidu Baike</td><td>Chinese</td><td>4.5B</td><td>0.7</td></tr><tr><td>Chinese Web</td><td>Chinese</td><td>95.4B</td><td>14.1</td></tr></table>\n\n" +
+          "Table 2 Statistics of the overall pre-training corpora for MOSS-base\n\n" +
+          "To endow MOSS with the ability of understanding and generating Chinese and English tokens both effectively and efficiently, we follow GPT-2[27] to build our bilingual tokenizer, which is trained using the byte-level BPE[28] algorithm. Specifically, we additionally trained a Chinese tokenizer on about 20 GB Chinese text data randomly sampled from our pre-training corpora using the byte-level BPE algorithm. The vocabulary size of our trained tokenizer is 60K with about 30% of Chinese tokens.\n\n" +
+          "Thus, we trained MOSS-base model on the 677B Cross-lingual corpus. According to the studies on emergent abilities[23], we considered that the expected base model with emergent abilities should have more than 10 billion parameters. In addition, we also wished it is feasible to fine-tune MOSS with a single computation node consisting of 8 NVIDIA 80GB A100 GPUs using ZeRO[29] and gradient checkpointing[30]. Finally, we use Transformer decoder with 16B parameters as the architecture of MOSS-base. To accelerate our validation of concept and reduce carbon footprint, we adopt Codegen-16Bmonon[31] as the initialization since we observed that the pre-training corpora used by Codegen[31] aligns with our ideal data distribution.\n\n" +
+          "We used the Adam optimizer[32] with \u03B2\u2081 = 0.9 and \u03B2\u2082 = 0.95. We adopt a peak learning rate of 3 \u00D7 10\u207B\u2075 with a warmup of 2% of the total number of training steps, a batch size of 2.6M tokens, and a weight decay of 0.1. A cosine learning rate schedule is used and the learning rate eventually decays to 3 \u00D7 10\u207B\u2076. Due to the large number of parameters, we use the pipeline parallelism, data parallelism and ZeRO[29] for distributed training. In particular, we adopt a 2-way pipeline parallelism and ZeRO stage 1. The total pre-training process lasted two month on 128 NVIDIA A100 GPUs.\n\n" +
+          "The pre-trained MOSS-base exhibited strong capabilities in both Chinese and English usage after bilingual pre-training. More importantly, the base model can generate knowledge in Chinese while the knowledge only exists in English form rather than Chinese form in the pretraining corpora. These preliminary results validated our hypothesis that knowledge can be transferred between Chinese and English.\n\n" +
+          "# 4 Alignment\n\n" +
+          "The base language model is pre-trained to predict the next token in the document, which does not inherently enable them to follow user instructions. It is necessary to obtain an initial instruction-following model to bootstrap the overall process.\n\n" +
+          "We interpret such a transformation from the base model to an instruction-following assistant as a significant phase of LLM training. Instead of continually inserting knowledge into the language model, we identify it as shifting the way the model handles its inner knowledge. Such transformation has both pros and cons. The positive aspect lies in that the ability of following human instructions makes it easier for users to extract the model's massive knowledge. It can also be trained to be creative and amusing, which is deemed as a higher level of capability.",
+      },
+    ],
+  },
+  {
     id: "xialong-shanshui",
     title: "霞胧山水",
     description: "这是一张暮色下的山水照。",
     type: "image",
     imageUrl: hfUrl("霞胧山水.png"),
     thumbnailUrl: "",
-    tags: ["VQA", "风景", "写作"],
+    tags: ["VQA", "ZH", "风景", "写作"],
     questions: [
       {
         id: "xs-q1",
@@ -186,7 +232,7 @@ export const demos: DemoVideo[] = [
       hfUrl("dog.png"),
     ],
     thumbnailUrl: "",
-    tags: ["VQA", "动物", "细节"],
+    tags: ["VQA", "ZH", "动物", "细节"],
     questions: [
       {
         id: "ami-q1",
@@ -204,13 +250,31 @@ export const demos: DemoVideo[] = [
     type: "ocr",
     imageUrl: hfUrl("玫珑瓜.png"),
     thumbnailUrl: "",
-    tags: ["OCR", "生活", "广告"],
+    tags: ["OCR", "ZH", "Grounding", "生活", "广告"],
     questions: [
       {
-        id: "ami-q1",
-        text: "Detect all text with their bounding boxes.",
-        answer: 
-          "\"喜茶新品玫珑瓜\": \"[97, 172, 214, 825]\"\n\"西柚口味\": \"[400, 208, 452, 375]\"\n\"芝士口味\":\n\"[333, 420, 383, 579]\"\n\"雪顶口味\": \"[289, 631, 345, 800]\"\n\"神仙吃法\": \"[858, 216, 952, 514]\"\n\"小红书\": \"[950, 785, 981, 854]\"",
+        id: "mlg-q1",
+        text: "输出图中的所有文本及其bbox",
+        answer:
+          "\"喜茶新品玫珑瓜\": \"[172, 97, 825, 214]\"\n\"西柚口味\": \"[208, 400, 375, 452]\"\n\"芝士口味\":\n\"[420, 333, 579, 383]\"\n\"雪顶口味\": \"[631, 289, 800, 345]\"\n\"神仙吃法\": \"[216, 858, 514, 952]\"\n\"小红书\": \"[785, 950, 854, 981]\"",
+      },
+    ],
+  },
+  {
+    id: "restaurant-bill",
+    title: "餐厅账单",
+    description: "TODO",
+    type: "image",
+    imageUrl: hfUrl("bill.png"),
+    thumbnailUrl: "",
+    tags: ["VQA", "ZH", "票据", "生活"],
+    questions: [
+      {
+        id: "rb-q1",
+        text: "提取图中的店名、服务员名字、账单号、人数、购买物品的品名数量和金额、总计金额、打印时间，输出json格式，购买物品呈现为list",
+        images: [hfUrl("bill.png")],
+        answer:
+          "```json\n{\n    \"店名\": \"桂满陇（徐汇西岸梦中心店）\",\n    \"服务员名字\": \"孙梦\",\n    \"账单号\": \"202511130143\",\n    \"人数\": \"2\",\n    \"购买物品\": [\n        {\n            \"品名\": \"纸巾\",\n            \"数量\": \"1盒\",\n            \"金额\": \"2.00\"\n        },\n        {\n            \"品名\": \"吴江桂花脆锅巴\",\n            \"数量\": \"1份\",\n            \"金额\": \"10.00\"\n        },\n        {\n            \"品名\": \"冻豆乳话梅番茄\",\n            \"数量\": \"1份\",\n            \"金额\": \"58.00\"\n        },\n        {\n            \"品名\": \"小黄鱼\",\n            \"数量\": \"1份\",\n            \"金额\": \"98.00\"\n        },\n        {\n            \"品名\": \"东坡草扎肉/配酒酿馒头（小份）\",\n            \"数量\": \"1份\",\n            \"金额\": \"28.00\"\n        },\n        {\n            \"品名\": \"泉水五常稻花香白米饭\",\n            \"数量\": \"2碗\",\n            \"金额\": \"6.00\"\n        },\n        {\n            \"品名\": \"菜心摔打鲜牛肉\",\n            \"数量\": \"1份\",\n            \"金额\": \"69.00\"\n        }\n    ],\n    \"总计金额\": \"271.00\",\n    \"打印时间\": \"2025-11-13 19:06:01\"\n}\n```",
       },
     ],
   },

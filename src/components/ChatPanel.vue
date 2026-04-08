@@ -14,8 +14,16 @@ interface ChatMessage {
 const props = defineProps<{
   questions: DemoQuestion[];
   autoStart?: boolean;
+  ocrEntries?: Array<{ id: string; text: string; bbox: string; rawLine: string }>;
+  activeBboxKeys?: Set<string>;
+  welcomeLabel?: string;
 }>();
 
+const emit = defineEmits<{
+  (e: "bboxToggle", id: string): void;
+}>();
+
+const lightboxImg = ref<string | null>(null);
 const messages = ref<ChatMessage[]>([]);
 const isTyping = ref(false);
 const chatContainer = ref<HTMLDivElement>();
@@ -73,7 +81,7 @@ function scrollToBottom() {
 }
 
 function renderMarkdown(text: string): string {
-  return marked.parse(text, { async: false }) as string;
+  return marked.parse(text, { async: false, breaks: true }) as string;
 }
 
 function askQuestion(question: DemoQuestion, instant: boolean = false) {
@@ -192,7 +200,7 @@ defineExpose({ askQuestion, resetChat });
             </svg>
           </div>
           <h3 class="mb-2 font-bold text-gray-800">
-            {{ props.autoStart ? 'Ask the Image' : 'Ask the Video' }}
+            {{ props.welcomeLabel || (props.autoStart ? 'Ask the Image' : 'Ask the Video') }}
           </h3>
           <p class="text-sm font-medium text-gray-500">
             Click a question below to see the model's response
@@ -207,25 +215,25 @@ defineExpose({ askQuestion, resetChat });
         class="animate-slide-up"
       >
         <!-- User message -->
-        <div v-if="msg.role === 'user'" class="flex justify-end">
-          <div
-            class="prose-user max-w-[85%] flex flex-col items-end gap-3"
-          >
-            <!-- Render images attached to user message -->
-            <div v-if="msg.images && msg.images.length > 0" class="flex flex-wrap justify-end gap-3">
-              <img 
-                v-for="(img, imgIdx) in msg.images" 
-                :key="imgIdx" 
-                :src="img" 
-                class="max-h-64 max-w-full rounded-[1.25rem] border-4 border-emerald-500 shadow-xl object-contain bg-black/5" 
-                loading="lazy" 
+        <div v-if="msg.role === 'user'">
+          <!-- Images displayed directly, outside the message bubble -->
+          <div v-if="msg.images && msg.images.length > 0" class="flex flex-wrap justify-end gap-3 mb-3">
+            <img
+              v-for="(img, imgIdx) in msg.images"
+              :key="imgIdx"
+              :src="img"
+              class="max-h-72 max-w-[70%] rounded-2xl shadow-lg object-contain bg-black/5 cursor-pointer hover:shadow-xl hover:scale-[1.01] transition-all"
+              loading="lazy"
+              @click="lightboxImg = img"
+            />
+          </div>
+          <div class="flex justify-end">
+            <div class="prose-user max-w-[85%]">
+              <div
+                class="rounded-[1.5rem] rounded-tr-md bg-emerald-600 px-6 py-4 text-[1.05rem] font-medium text-white shadow-md border border-emerald-500/50"
+                v-html="renderMarkdown(msg.content)"
               />
             </div>
-            
-            <div 
-              class="rounded-[1.5rem] rounded-tr-md bg-emerald-600 px-6 py-4 text-[1.05rem] font-medium text-white shadow-md border border-emerald-500/50"
-              v-html="renderMarkdown(msg.content)"
-            />
           </div>
         </div>
 
@@ -244,11 +252,30 @@ defineExpose({ askQuestion, resetChat });
                 class="inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-500"
               />
             </div>
+
+            <!-- OCR interactive mode: raw output with clickable entries -->
             <div
+              v-if="ocrEntries && ocrEntries.length > 0 && !msg.isTyping"
+              class="prose-assistant max-w-none rounded-[1.5rem] rounded-tl-md border border-emerald-100 bg-white/95 px-7 py-5 text-gray-800 shadow-sm font-mono text-sm leading-loose"
+            >
+              <div
+                v-for="entry in ocrEntries"
+                :key="entry.id"
+                @click="emit('bboxToggle', entry.id)"
+                class="cursor-pointer select-none py-0.5 transition-all hover:font-bold"
+                :class="activeBboxKeys?.has(entry.id)
+                  ? 'underline decoration-emerald-500 decoration-2 underline-offset-4'
+                  : 'italic'"
+              >{{ entry.rawLine }}</div>
+            </div>
+
+            <!-- Regular markdown rendering (or during typing) -->
+            <div
+              v-else
               class="prose-assistant max-w-none rounded-[1.5rem] rounded-tl-md border border-emerald-100 bg-white/95 px-7 py-5 text-[1.05rem] leading-[1.8] text-gray-800 shadow-sm"
               v-html="renderMarkdown(msg.content)"
-            >
-            </div>
+            />
+
             <div v-if="msg.images && msg.images.length > 0" class="mt-3 flex flex-wrap gap-2">
               <img 
                 v-for="(img, imgIdx) in msg.images" 
@@ -343,6 +370,20 @@ defineExpose({ askQuestion, resetChat });
 
       </div>
     </div>
+
+    <!-- Image Lightbox -->
+    <Teleport to="body">
+      <div
+        v-if="lightboxImg"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm cursor-pointer"
+        @click="lightboxImg = null"
+      >
+        <img
+          :src="lightboxImg"
+          class="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
+        />
+      </div>
+    </Teleport>
   </div>
 </template>
 
