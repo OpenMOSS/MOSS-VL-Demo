@@ -54,10 +54,21 @@ function scrollToTop() {
 function handleWheel(e: WheelEvent) {
   const container = document.getElementById("scroll-container");
   const grid = document.getElementById("demo-grid");
+  const videoGridContainer = document.getElementById("video-grid-container");
   
   if (!container || !grid || isScrolling.value) {
     e.preventDefault();
     return;
+  }
+
+  // Handle nested scrolling inside the video grid container
+  if (videoGridContainer && videoGridContainer.contains(e.target as Node)) {
+    if (e.deltaY < 0 && videoGridContainer.scrollTop > 0) {
+      return; // allow default inner scroll
+    }
+    if (e.deltaY > 0 && Math.ceil(videoGridContainer.scrollTop) < videoGridContainer.scrollHeight - videoGridContainer.clientHeight) {
+      return; // allow default inner scroll
+    }
   }
 
   const threshold = window.innerHeight * 0.2; // 20% of screen height
@@ -83,6 +94,7 @@ function handleTouchStart(e: TouchEvent) {
 function handleTouchMove(e: TouchEvent) {
   const container = document.getElementById("scroll-container");
   const grid = document.getElementById("demo-grid");
+  const videoGridContainer = document.getElementById("video-grid-container");
   
   if (!container || !grid || isScrolling.value) {
     if (isScrolling.value) e.preventDefault();
@@ -92,6 +104,18 @@ function handleTouchMove(e: TouchEvent) {
   const touchEndY = e.touches[0].clientY;
   const deltaY = touchStartY - touchEndY; // positive means scrolling down
   
+  // Handle nested scrolling inside the video grid container
+  if (videoGridContainer && videoGridContainer.contains(e.target as Node)) {
+    if (deltaY < 0 && videoGridContainer.scrollTop > 0) {
+      touchStartY = touchEndY; // update start position
+      return; // allow default inner scroll
+    }
+    if (deltaY > 0 && Math.ceil(videoGridContainer.scrollTop) < videoGridContainer.scrollHeight - videoGridContainer.clientHeight) {
+      touchStartY = touchEndY;
+      return; // allow default inner scroll
+    }
+  }
+
   const threshold = window.innerHeight * 0.2;
   const isAtTop = container.scrollTop < threshold;
 
@@ -170,7 +194,9 @@ onUnmounted(() => {
             model.
           </p>
         </div>
-        <VideoGrid :videos="demos" />
+        <div id="video-grid-container" class="max-h-[60vh] overflow-y-auto rounded-3xl bg-white/30 backdrop-blur-md border border-white/40 shadow-xl p-6 hide-scrollbar">
+          <VideoGrid :videos="demos" />
+        </div>
       </div>
     </div>
   </div>

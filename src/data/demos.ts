@@ -113,4 +113,36 @@ export const demos: DemoVideo[] = [
       },
     ],
   },
+  {
+    id: "zaran",
+    title: "扎染",
+    description: "这是一段手工扎染的记录视频。",
+    videoUrl: hfUrl("扎染.mp4"),
+    thumbnailUrl: "",
+    tags: ["Temporal Grounding", "生活", "手工"],
+    questions: [
+      {
+        id: "lg-q1",
+        text: "Describe the content of this video and indicate the time corresponding to each description.",
+        answer:
+          "(00:00 - 00:10) A person's hand is seen submerging a tie-dyed bed cover into a dark container filled with water, the fabric displaying a vibrant mix of red, yellow, blue, and green hues. As the fabric is lifted from the water, the camera captures a close-up of the tie-dye pattern, emphasizing the intricate swirls and color transitions. On-screen text appears, reading \"Tie-Dying my bed covers!\" The scene then transitions to a wider shot, revealing the full bed cover now fully submerged in the water, with the same text still visible, reinforcing the activity being performed. The sequence highlights the process of tie-dyeing, focusing on the interaction between the fabric and the water, and culminating in a clear view of the finished product.\n\n(00:10 - 00:25) A person wearing a black long-sleeved shirt begins by laying a white t-shirt flat on a patterned rug, carefully folding it into a compact, circular shape. Using a green rubber band, they tightly secure the folded fabric, ensuring it remains in place. The person then lifts the bundled t-shirt, holding it up to the camera to display the finished bundle, which is now ready for the dyeing process.\n\n(00:25 - 00:37) A person begins by pouring blue dye from a packet into a clear Pyrex measuring cup that already contains a small amount of water. Next, they add hot water from a kettle into the same cup, causing the blue dye to dissolve and form a dark blue liquid. The person then stirs the mixture thoroughly with a spoon, ensuring the dye is fully incorporated into the water. Finally, they lift the measuring cup and pour the dark blue dye mixture into a larger container, completing the preparation of the dye solution.\n\n(00:37 - 01:20) A young woman with dark hair, wearing a black hoodie, walks down a hallway and smiles at the camera before the scene transitions to nighttime outdoors. In the dark, she begins pouring a blue dye mixture from a measuring cup onto a bundle of white fabric that is lying on the grass. The camera captures a close-up of her hands as she carefully applies the dye, ensuring even coverage. She then moves on to a second bundle, which is already partially dyed blue, and continues the process with precision. The scene shifts to a close-up of a third bundle, where she pours a red dye mixture onto the fabric, adding a new layer of color to the evolving design. The sequence highlights the careful and deliberate application of dye to each bundle, with the woman methodically working through the process under the dim outdoor lighting.\n\n(01:20 - 02:18) A person begins by pouring a pinkish-red dye from a packet into a measuring cup, followed by the addition of hot water, which is then stirred thoroughly to create a dark red dye mixture. The scene transitions to nighttime outdoors, where the person is seen pouring the red dye onto a bundle of fabric that already has blue dye applied to it. Next, the person pours a dark blue dye mixture from a measuring cup onto another bundle of fabric, continuing the process of applying dye to the fabric bundles. The person then pours a dark red dye mixture from a measuring cup onto a third bundle of fabric, which is already partially dyed with blue and red. The sequence concludes with the person pouring a dark red dye mixture from a measuring cup onto a fourth bundle of fabric, which is already partially dyed with blue and red, completing the application of dye to the fabric bundles.\n\n(02:18 - 03:16) A person begins by pouring a dark red dye mixture from a measuring cup onto a bundle of fabric that is already partially dyed with blue and red. Next, they pour a dark red dye mixture from a measuring cup onto a bundle of fabric that is already partially dyed with blue and red. The person then pours a dark red dye mixture from a measuring cup onto a bundle of fabric that is already partially dyed with blue and red. After applying the dye, the person wraps the dyed fabric bundle in a sheet of aluminum foil, carefully folding and pressing it to ensure the dye is fully enclosed. They then place the foil-wrapped bundle into a black plastic tub, positioning it alongside other similarly wrapped bundles. The scene transitions to a close-up of a hand holding a tie-dyed bed cover, with on-screen text reading \"THE NEXT DAY,\" indicating the passage of time. The person then unwraps the foil from the bundle, revealing the fabric underneath, and proceeds to remove the rubber bands that had been securing the fabric in place. This sequence captures the final steps of the tie-dyeing process, including the application of dye, wrapping in foil, and the subsequent unwrapping and removal of securing materials.\n\n(03:16 - 04:38) A person begins by washing a tie-dyed bed cover in a sink filled with soapy water, carefully agitating the fabric to remove excess dye. As the washing continues, the person removes the rubber bands that had been securing the fabric, allowing the colors to blend and settle. The scene transitions to a close-up of the finished tie-dyed bed cover, now fully revealed with a vibrant, multi-colored pattern. On-screen text appears, reading \"Eve-Dying my bed covers!\" followed by another text overlay that states \"Tie-Dying my bed covers!\" The video concludes with a final shot of the completed tie-dyed bed cover, showcasing the intricate and colorful design that has emerged from the washing process.",
+      }
+    ],
+  },
+  {
+    id: "star-war",
+    title: "星球大战报幕",
+    description: "一段经典的星球大战片前报幕。",
+    videoUrl: hfUrl("Star_Wars.mp4"),
+    thumbnailUrl: "",
+    tags: ["VQA", "影视", "经典"],
+    questions: [
+      {
+        id: "lg-q1",
+        text: "根据柜员的说法，柜台上三个杯子分别对应什么大小的？",
+        answer:
+          "中杯、大杯和特大杯。",
+      },
+    ],
+  },
 ];
