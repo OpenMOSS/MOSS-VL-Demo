@@ -174,7 +174,7 @@ onUnmounted(() => {
         />
         <!-- Text styled with artistic green gradient, with padding-bottom to prevent letters like 'g' from being cut off -->
         <h1 class="pb-3 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-emerald-900 via-emerald-700 to-emerald-900 drop-shadow-sm">
-          MOSS-VL Toward Advanced Video Understanding
+          MOSS-VL: Toward Advanced Video Understanding
         </h1>
       </div>
 
