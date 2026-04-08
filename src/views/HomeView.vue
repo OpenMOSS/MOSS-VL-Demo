@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
+import { useRoute } from "vue-router";
 import { demos } from "@/data/demos";
 import VideoGrid from "@/components/VideoGrid.vue";
 
+const route = useRoute();
 const isScrolling = ref(false);
 
 function smoothScrollTo(targetPosition: number, duration: number = 500) {
@@ -139,6 +141,13 @@ onMounted(() => {
     container.addEventListener('wheel', handleWheel, { passive: false });
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
+  }
+
+  // Handle hash navigation back to grid
+  if (route.hash === '#demo-grid') {
+    setTimeout(() => {
+      scrollToGrid();
+    }, 100);
   }
 });
 

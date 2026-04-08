@@ -9,8 +9,12 @@ export interface DemoVideo {
   id: string;
   title: string;
   description: string;
-  videoUrl: string;
-  thumbnailUrl: string;
+  type?: "video" | "image" | "multi-image";
+  videoUrl?: string;
+  imageUrl?: string;
+  imageUrls?: string[];
+  thumbnailUrl?: string;
+  thumbnailTime?: number;
   tags: string[];
   questions: DemoQuestion[];
 }
@@ -27,6 +31,7 @@ export const demos: DemoVideo[] = [
     id: "huaqiang-buygua",
     title: "华强买瓜",
     description: "经典影视片段：华强与瓜摊老板之间关于西瓜的一场精彩博弈。",
+    type: "video",
     videoUrl: hfUrl("华强买瓜.mp4"),
     thumbnailUrl: "",
     tags: ["VQA", "影视", "对话", "经典"],
@@ -48,14 +53,12 @@ export const demos: DemoVideo[] = [
         text: "从视频中看，可以从哪个时间点的内容看出来主角的电动车的车牌号？",
         answer:
           "从时间01:43开始到01:47结束，持续了大约4秒。",
-        followUps: [
-          {
-            id: "hq-q3-1",
-            text: "从该时间点，识别主角电动车的车牌号是多少？",
-            answer:
-              "E7168",
-          }
-        ]
+      },
+      {
+        id: "hq-q4",
+        text: "从该时间点，识别主角电动车的车牌号是多少？",
+        answer:
+          "E7168",
       },
     ],
   },
@@ -63,8 +66,10 @@ export const demos: DemoVideo[] = [
     id: "dakaimen",
     title: "大开门",
     description: "一段关于「大开门」的精彩视频片段。",
+    type: "video",
     videoUrl: hfUrl("大开门.mp4"),
     thumbnailUrl: "",
+    thumbnailTime: 25,
     tags: ["Temporal Grounding", "生活", "趣味"],
     questions: [
       {
@@ -79,12 +84,13 @@ export const demos: DemoVideo[] = [
     id: "taishi-luroufan",
     title: "台式卤肉饭",
     description: "一段关于「台式卤肉饭」的制作教程。",
+    type: "video",
     videoUrl: hfUrl("台式卤肉饭.mp4"),
     thumbnailUrl: "",
     tags: ["Temporal Grounding", "生活", "菜谱"],
     questions: [
       {
-        id: "dk-q1",
+        id: "tl-q1",
         text: "根据视频，简述做菜的步骤并且定位相应的时间段",
         answer:
           "从 00:00 开始到 00:06 结束，我们可以看到特写镜头首先展示了一锅正在炖煮的卤肉，锅中包含肉块、卤蛋和葱段，表面撒有香料，随后镜头聚焦于锅中正在冒泡的卤肉，热气腾腾，色泽诱人。画面中央出现白色文字“台式卤肉饭”，紧接着镜头切换，用木勺将卤肉舀到一碗白米饭上，米饭旁配有切开的卤蛋和绿色蔬菜。画面下方出现白色字幕：“软糯入味的卤肉饭没有人不爱吧~”。随后，一个木勺舀起一勺卤肉和米饭，展示其丰富的配料和诱人的色泽，画面下方再次出现白色字幕：“软糯入味的卤肉饭没有人不爱吧~”。整个视频以成品展示开场，呈现了这道台式卤肉饭的诱人外观和制作完成后的摆盘效果。\n\n在 00:06 至 00:11 期间，一只手使用菜刀在木质砧板上将五花肉切成小块，画面下方显示白色字幕“五花肉切小块”；随后，同一块砧板上被切碎的红葱头，画面下方出现白色字幕“红葱头切小丁”；接着，切碎的干香菇也被展示在砧板上，画面下方显示白色字幕“泡发好的干香菇切丁”。随后镜头切换，展示出四个装有食材的碗，分别盛放着切好的五花肉、干香菇、红葱头和蒜末，所有食材整齐摆放，准备用于后续的烹饪步骤。整个过程围绕食材的初步处理展开，清晰呈现了五花肉、红葱头和干香菇的切割方式与状态。\n\n在 00:11 至 00:24 期间，视频展示了在平底锅中，切碎的红葱头被倒入热油中，伴随着“下锅小火慢炸”的白色字幕，厨师用木铲不断翻炒，直至红葱头呈现出金黄色，随后用漏勺将其捞出，留下热油在锅中。接着，切好的五花肉被放入锅中，画面显示“五花肉 蒜末 姜片”的白色字幕，厨师继续用木铲翻炒，使五花肉逐渐煸炒出油脂，画面下方出现“煸炒出油脂”的白色字幕。随后，厨师将煸炒出的多余油脂倒入另一个碗中，画面下方显示“多余的油盛出来 油多了会腻”的白色字幕。紧接着，厨师向锅中加入一勺料酒、两勺生抽、一勺老抽、八角、桂皮、香叶以及几颗冰糖，画面左侧出现白色文字列表，详细列出了所用的调味料，包括“1勺料酒 2勺生抽 1勺老抽 八角 桂皮 香叶 几颗冰糖”，厨师继续翻炒，使五花肉均匀地裹上酱汁，画面下方出现“翻炒均匀”的白色字幕。整个过程清晰展示了卤肉的初步烹饪步骤，包括炸红葱头、煸炒五花肉以及加入调味料进行翻炒。\n\n00:24 至 00:31，画面显示切好的干香菇丁和葱头丁被加入锅中，与五花肉一起翻炒，画面下方出现白色字幕“下锅干香菇丁和葱头丁”。随后，厨师向锅中倒入适量的水，画面下方出现白色字幕“加入没过食材”，接着将三个卤蛋放入锅中，画面下方出现白色字幕“再几个鸡蛋 小火煮一个小时”。最后，厨师盖上锅盖，画面下方出现白色字幕“开盖后再煮10分钟 收浓汤汁”。整个过程展示了卤肉的收尾阶段，包括加入干香菇和葱头丁、加水、放入卤蛋并盖上锅盖进行长时间炖煮。\n\n从 00:31 开始到 00:37 结束，我们可以看到特写镜头展示了卤肉在锅中炖煮的过程，汤汁正在慢慢收浓，随后画面切换至卤肉被盛入一碗白米饭中，旁边摆放着切开的卤蛋和绿色蔬菜，厨师使用木勺将卤肉与米饭充分搅拌，画面下方出现白色字幕：“酱汁浓郁 拌着米饭吃真的超级香~”。紧接着，一个木勺舀起一勺拌好的卤肉饭，画面下方再次出现白色字幕：“卤肉软糯入味 肥而不腻~太好吃啦”。视频以这道完成的台式卤肉饭作为结尾，展示了其最终的呈现效果和诱人的口感。",
@@ -95,6 +101,7 @@ export const demos: DemoVideo[] = [
     id: "luoge-slap",
     title: "罗哥扇耳光",
     description: "一段经典的「罗哥扇耳光」名场面，展现了精彩的表演张力。",
+    type: "video",
     videoUrl: hfUrl("罗哥扇耳光.mp4"),
     thumbnailUrl: "",
     tags: ["VQA", "影视", "经典", "名场面"],
@@ -117,12 +124,13 @@ export const demos: DemoVideo[] = [
     id: "zaran",
     title: "扎染",
     description: "这是一段手工扎染的记录视频。",
+    type: "video",
     videoUrl: hfUrl("扎染.mp4"),
     thumbnailUrl: "",
     tags: ["Temporal Grounding", "生活", "手工"],
     questions: [
       {
-        id: "lg-q1",
+        id: "zr-q1",
         text: "Describe the content of this video and indicate the time corresponding to each description.",
         answer:
           "(00:00 - 00:10) A person's hand is seen submerging a tie-dyed bed cover into a dark container filled with water, the fabric displaying a vibrant mix of red, yellow, blue, and green hues. As the fabric is lifted from the water, the camera captures a close-up of the tie-dye pattern, emphasizing the intricate swirls and color transitions. On-screen text appears, reading \"Tie-Dying my bed covers!\" The scene then transitions to a wider shot, revealing the full bed cover now fully submerged in the water, with the same text still visible, reinforcing the activity being performed. The sequence highlights the process of tie-dyeing, focusing on the interaction between the fabric and the water, and culminating in a clear view of the finished product.\n\n(00:10 - 00:25) A person wearing a black long-sleeved shirt begins by laying a white t-shirt flat on a patterned rug, carefully folding it into a compact, circular shape. Using a green rubber band, they tightly secure the folded fabric, ensuring it remains in place. The person then lifts the bundled t-shirt, holding it up to the camera to display the finished bundle, which is now ready for the dyeing process.\n\n(00:25 - 00:37) A person begins by pouring blue dye from a packet into a clear Pyrex measuring cup that already contains a small amount of water. Next, they add hot water from a kettle into the same cup, causing the blue dye to dissolve and form a dark blue liquid. The person then stirs the mixture thoroughly with a spoon, ensuring the dye is fully incorporated into the water. Finally, they lift the measuring cup and pour the dark blue dye mixture into a larger container, completing the preparation of the dye solution.\n\n(00:37 - 01:20) A young woman with dark hair, wearing a black hoodie, walks down a hallway and smiles at the camera before the scene transitions to nighttime outdoors. In the dark, she begins pouring a blue dye mixture from a measuring cup onto a bundle of white fabric that is lying on the grass. The camera captures a close-up of her hands as she carefully applies the dye, ensuring even coverage. She then moves on to a second bundle, which is already partially dyed blue, and continues the process with precision. The scene shifts to a close-up of a third bundle, where she pours a red dye mixture onto the fabric, adding a new layer of color to the evolving design. The sequence highlights the careful and deliberate application of dye to each bundle, with the woman methodically working through the process under the dim outdoor lighting.\n\n(01:20 - 02:18) A person begins by pouring a pinkish-red dye from a packet into a measuring cup, followed by the addition of hot water, which is then stirred thoroughly to create a dark red dye mixture. The scene transitions to nighttime outdoors, where the person is seen pouring the red dye onto a bundle of fabric that already has blue dye applied to it. Next, the person pours a dark blue dye mixture from a measuring cup onto another bundle of fabric, continuing the process of applying dye to the fabric bundles. The person then pours a dark red dye mixture from a measuring cup onto a third bundle of fabric, which is already partially dyed with blue and red. The sequence concludes with the person pouring a dark red dye mixture from a measuring cup onto a fourth bundle of fabric, which is already partially dyed with blue and red, completing the application of dye to the fabric bundles.\n\n(02:18 - 03:16) A person begins by pouring a dark red dye mixture from a measuring cup onto a bundle of fabric that is already partially dyed with blue and red. Next, they pour a dark red dye mixture from a measuring cup onto a bundle of fabric that is already partially dyed with blue and red. The person then pours a dark red dye mixture from a measuring cup onto a bundle of fabric that is already partially dyed with blue and red. After applying the dye, the person wraps the dyed fabric bundle in a sheet of aluminum foil, carefully folding and pressing it to ensure the dye is fully enclosed. They then place the foil-wrapped bundle into a black plastic tub, positioning it alongside other similarly wrapped bundles. The scene transitions to a close-up of a hand holding a tie-dyed bed cover, with on-screen text reading \"THE NEXT DAY,\" indicating the passage of time. The person then unwraps the foil from the bundle, revealing the fabric underneath, and proceeds to remove the rubber bands that had been securing the fabric in place. This sequence captures the final steps of the tie-dyeing process, including the application of dye, wrapping in foil, and the subsequent unwrapping and removal of securing materials.\n\n(03:16 - 04:38) A person begins by washing a tie-dyed bed cover in a sink filled with soapy water, carefully agitating the fabric to remove excess dye. As the washing continues, the person removes the rubber bands that had been securing the fabric, allowing the colors to blend and settle. The scene transitions to a close-up of the finished tie-dyed bed cover, now fully revealed with a vibrant, multi-colored pattern. On-screen text appears, reading \"Eve-Dying my bed covers!\" followed by another text overlay that states \"Tie-Dying my bed covers!\" The video concludes with a final shot of the completed tie-dyed bed cover, showcasing the intricate and colorful design that has emerged from the washing process.",
@@ -133,15 +141,57 @@ export const demos: DemoVideo[] = [
     id: "star-war",
     title: "星球大战报幕",
     description: "一段经典的星球大战片前报幕。",
+    type: "video",
     videoUrl: hfUrl("Star_Wars.mp4"),
     thumbnailUrl: "",
     tags: ["VQA", "影视", "经典"],
     questions: [
       {
-        id: "lg-q1",
-        text: "根据柜员的说法，柜台上三个杯子分别对应什么大小的？",
+        id: "sw-q1",
+        text: "Describe all the content shown in the video and provide a full text output.",
         answer:
-          "中杯、大杯和特大杯。",
+          "The video opens with a black screen that gradually transitions to a dark blue, star-filled background, where a golden, three-dimensional \"20th CENTURY FOX\" logo slowly rises into view, illuminated by sweeping spotlights from above. As the logo fades, the screen returns to darkness, and green text appears in the center, reading: \"A LUCASFILM LIMITED Production.\" The scene shifts again to a dark blue, starry backdrop, where glowing blue text fades in: \"A long time ago in a galaxy far, far away....\" This text fades out, making way for the iconic \"STAR WARS\" logo, displayed in a stylized, three-dimensional font with a white outline and a blue fill, which slowly zooms out into the vastness of space. The screen remains dark as a long paragraph of glowing orange text begins to fade in line by line, forming a complete narrative passage that reads: \"It is a period of civil war. Rebel spaceships, striking from a hidden base, have won their first victory against the evil Galactic Empire. During the battle, rebel spies managed to steal secret plans to the Empire's ultimate weapon, the DEATH STAR, an armored space station with enough power to destroy an entire planet. Pursued by the Empire's sinister agents, Princess Leia races home aboard her starship, custodian of the stolen plans that can save her people and restore freedom to the galaxy....\" As the final line of text fades, the camera slowly zooms out, revealing the full paragraph receding into the distance, emphasizing the immense scale of the galaxy and the magnitude of the conflict. The scene transitions to a dark blue, star-filled expanse of space, where a small white object glides swiftly from right to left. The camera then pans to reveal a vast, curved planetary horizon, with a smaller, spherical moon-like body positioned above it. A sleek, white starship with red markings enters from the right, moving leftward before exiting the frame. Moments later, the imposing silhouette of a massive, wedge-shaped Star Destroyer emerges from the right, its surface textured and detailed, as the camera pulls back to reveal the full scale of the vessel. The Star Destroyer fires a green laser beam from its bow, which streaks across the screen and impacts a distant target, triggering a large, fiery explosion. The camera then shifts to a close-up of the Star Destroyer's front section, where its four main engines ignite in a brilliant burst of blue-white light, propelling the ship forward with powerful thrust. The scene transitions to a brightly lit, white interior corridor of a starship, where a golden humanoid droid, C-3PO, stands motionless. In front of him, a small, cylindrical droid with a domed top, R2-D2, is positioned, completing the visual narrative of the opening sequence.",
+      },
+    ],
+  },
+  {
+    id: "xialong-shanshui",
+    title: "霞胧山水",
+    description: "这是一张暮色下的山水照。",
+    type: "image",
+    imageUrl: hfUrl("霞胧山水.png"),
+    thumbnailUrl: "",
+    tags: ["VQA", "风景", "写作"],
+    questions: [
+      {
+        id: "xs-q1",
+        text: 
+          "### 【光影随笔 —— 图像的诗意自白\n\n**【创作设定】** 请你化身为这幅画面中的一个**隐形观察者**或**画中人**，以第一人称（我）的视角，为这幅图像写一段散文式的文学描述。 **【核心诉求】** 1. **视觉解码**: 不要只是简单罗列物体，请捕捉画面中微小的光影跳动、色彩的冷暖交织、以及物体表面那触手可及的质感。 2. **情感共鸣**: 将你的观察转化为内心独白。看到这些景致，你会联想到什么样的往事、季节或哲学瞬间？请让文字流露出一股温暖、和蔼且治愈的力量。 3. **笔触优美**: 追求辞藻的典雅与意境的深邃。想象这是一篇刊登在文学杂志上的卷首语，或者是寄给远方朋友的一封唯美信札。 **【硬性约束】** 1. **词汇红线**: 为了保证文字的洗练与高级感，全文禁止出现***“就是”***与***“然后”***这两个口语化词汇。请尝试用更优雅的衔接方式（如：继而、于是、伴随、沉沦于、驻足在……）来串联你的思绪。 2. **视角**: 必须坚持第一人称“我”，语调要像老友重逢般温和、亲切。 3. **内容来源**: 一切想象须基于图中真实存在的元素，完成一场从“眼见”到“心觉”的艺术延伸。",
+        answer: 
+          "我伫立于水岸，凝望天际那绚烂的晚霞，仿佛时间在此刻被拉长，每一缕云彩都化作流动的诗行。天空被染成金红与靛蓝交织的画卷，云层厚重如墨，边缘却镶着金边，仿佛被无形之手精心雕琢。阳光穿透云隙，洒下斑驳的光影，将水面映照得如镜面般璀璨，波光粼粼，与天际的色彩遥相呼应。\n\n远处的山峦在暮色中勾勒出深邃的轮廓，静默而庄严，仿佛守护着这片宁静的水域。水面上，几艘小船悠然漂浮，船影在波光中轻轻摇曳，宛如梦境中的精灵。我心中涌起一股难以言喻的宁静与满足，仿佛所有的喧嚣与烦恼都在这一刻被抛诸脑后。\n\n这景象让我想起儿时与家人共度的夏日黄昏，那时的天空同样绚烂，我们坐在岸边，任由晚风拂面，聆听海浪的低语。如今，虽已成年，但那份纯真的喜悦依旧在心中流淌。我愿将这份美好珍藏于心底，如同收藏一幅永不褪色的画卷，每当心绪烦乱时，便能回望这片宁静的天地，重拾内心的平和与安宁。\n\n在这片光影交织的美景中，我仿佛找到了与自然对话的方式，每一朵云、每一抹光、每一丝波纹都在诉说着生命的韵律。我愿以一颗感恩的心，继续在这片天地间漫步，感受每一次日出日落带来的惊喜与感动。",
+      },
+    ],
+  },
+  {
+    id: "animals-multi-image",
+    title: "多图动物描述",
+    description: "这是一个多图展示的样例，包含了暮色山水等画面，用于测试模型对多张图像序列的理解能力。",
+    type: "multi-image",
+    imageUrls: [
+      hfUrl("cat.png"),
+      hfUrl("wolf.png"),
+      hfUrl("sheep.png"),
+      hfUrl("dog.png"),
+    ],
+    thumbnailUrl: "",
+    tags: ["VQA", "动物", "细节"],
+    questions: [
+      {
+        id: "ami-q1",
+        text: 
+          "# Role\n\n你是一个专业的视觉分析专家和多模态逻辑学家。你能够精准识别多张图片中的细节，并分析图片之间的关联性、差异性和演进逻辑。\n\n# Goals\n1. 细致描述每张图片的核心内容。\n2. 识别图片序列中的共同元素、变化点或逻辑连接。\n3. 根据用户的提问，跨图片提取信息并进行综合判断。\n\n# Constraints\n- 区分描述“客观事实”与“推论”。\n- 如果图片之间有明显的顺序（如步骤、时间流逝），请明确指出。\n- 采用结构化的输出格式（使用 Markdown）。",
+        answer: 
+          "### 图片描述\n\n1. **第一张图片**:\n- **核心内容**: 一只猫躺在黑色的编织椅上，背景模糊，主要聚焦在猫的面部和身体。猫的眼睛是黄色的，毛色为灰褐色，带有条纹。猫的表情显得很放松，眼睛半闭，似乎在享受休息。\n- **细节**: 猫的胡须清晰可见，毛发蓬松，椅子的编织纹理明显。\n\n2. **第二张图片**:\n- **核心内容**: 一只狼张大嘴巴，似乎在嚎叫或打哈欠。狼的毛色为灰黑色，带有白色的斑点，背景为自然环境，地面有泥土和石块。\n- **细节**: 狼的牙齿和舌头清晰可见，眼睛闭着，表情显得非常生动。\n\n3. **第三张图片**:\n- **核心内容**: 一群羊在昏暗的环境中，前景是一只小羊羔，背景中有几只成年羊。羊的毛色为白色和浅棕色，背景较为模糊，主要聚焦在羊的面部和身体。\n- **细节**: 小羊羔的毛发蓬松，眼睛明亮，成年羊的毛发较长，背景中有阴影和光线的对比。\n\n4. **第四张图片**:\n- **核心内容**: 一只小狗站在红色的地面上，背景模糊，主要聚焦在小狗的面部和身体。小狗的毛色为浅棕色和白色，尾巴卷曲，表情显得很可爱。\n- **细节**: 小狗的眼睛大而明亮，毛发蓬松，地面的红色与小狗的毛色形成对比。\n\n### 共同表达的主题或场景\n- **主题**: 这四张图片都展示了动物的特写，主要聚焦在动物的面部和身体，表现出动物的自然状态和表情。\n- **场景**: 每张图片的背景都较为模糊，主要突出动物的主体，没有明显的环境细节。\n\n### 对比分析\n\n| 特征 | 第一张图片 | 第二张图片 | 第三张图片 | 第四张图片 |\n|---|---|---|---|---|\n| **动物种类** | 猫 | 狼 | 羊 | 小狗 |\n| **毛色** | 灰褐色带条纹 | 灰黑色带白色斑点 | 白色和浅棕色 | 浅棕色和白色 |\n| **背景** | 黑色编织椅 | 自然环境（泥土和石块） | 昏暗环境 | 红色地面 |\n| **表情** | 放松，眼睛半闭 | 哀嚎或打哈欠，眼睛闭着 | 小羊羔明亮，成年羊模糊 | 可爱，眼睛大而明亮 |\n| **构图** | 主体在前景，背景模糊 | 主体在前景，背景自然 | 主体在前景，背景昏暗 | 主体在前景，背景模糊 |\n\n### 总结\n\n这四张图片通过不同的动物和背景，展示了动物的自然状态和表情，每张图片都突出了动物的主体，背景较为模糊，形成了统一的视觉效果。",
       },
     ],
   },

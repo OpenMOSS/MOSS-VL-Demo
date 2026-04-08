@@ -12,20 +12,37 @@ defineProps<{
     class="group flex h-full flex-col overflow-hidden rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-900/10 hover:-translate-y-1"
   >
     <div class="relative aspect-video overflow-hidden bg-emerald-900/10">
-      <!-- Use video element for thumbnail when no image is provided -->
-      <video
-        v-if="!video.thumbnailUrl"
-        :src="video.videoUrl"
-        preload="metadata"
-        muted
-        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-      />
+      <!-- Image type -->
       <img
-        v-else
+        v-if="video.type === 'image'"
+        :src="video.thumbnailUrl || video.imageUrl"
+        :alt="video.title"
+        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        loading="lazy"
+      />
+      <!-- Multi-image type -->
+      <img
+        v-else-if="video.type === 'multi-image' && video.imageUrls && video.imageUrls.length > 0"
+        :src="video.thumbnailUrl || video.imageUrls[0]"
+        :alt="video.title"
+        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        loading="lazy"
+      />
+      <!-- Explicit thumbnail for video -->
+      <img
+        v-else-if="video.thumbnailUrl"
         :src="video.thumbnailUrl"
         :alt="video.title"
         class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         loading="lazy"
+      />
+      <!-- Video fallback -->
+      <video
+        v-else
+        :src="video.thumbnailTime !== undefined ? `${video.videoUrl}#t=${video.thumbnailTime}` : video.videoUrl"
+        preload="metadata"
+        muted
+        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
       <div
         class="absolute inset-0 flex items-center justify-center bg-emerald-900/0 transition-all duration-300 group-hover:bg-emerald-900/20"

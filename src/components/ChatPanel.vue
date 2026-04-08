@@ -20,6 +20,7 @@ const chatContainer = ref<HTMLDivElement>();
 const currentQuestions = ref<DemoQuestion[]>([]);
 const hasStarted = ref(false);
 const activeQuestion = ref<DemoQuestion | null>(null);
+const usedQuestionIds = ref(new Set<string>());
 let typeTimer: ReturnType<typeof setInterval> | null = null;
 
 watch(() => props.questions, () => {
@@ -31,6 +32,7 @@ function resetChat() {
   isTyping.value = false;
   hasStarted.value = false;
   activeQuestion.value = null;
+  usedQuestionIds.value.clear();
   currentQuestions.value = [...props.questions];
   if (typeTimer) {
     clearInterval(typeTimer);
@@ -53,6 +55,7 @@ function renderMarkdown(text: string): string {
 function askQuestion(question: DemoQuestion) {
   if (isTyping.value) return;
 
+  usedQuestionIds.value.add(question.id);
   hasStarted.value = true;
   activeQuestion.value = question;
   // Hide current questions immediately
@@ -86,7 +89,7 @@ function askQuestion(question: DemoQuestion) {
       charIndex += step;
       scrollToBottom();
     } else {
-      finishTyping(reactiveMsg, question);
+      finishTyping(reactiveMsg);
     }
   }, CHAR_DELAY_MS);
 }
@@ -98,22 +101,21 @@ function stopTyping() {
   }
   const lastMsg = messages.value[messages.value.length - 1];
   if (lastMsg && lastMsg.isTyping && activeQuestion.value) {
-    lastMsg.content = activeQuestion.value.answer;
-    finishTyping(lastMsg, activeQuestion.value);
-    scrollToBottom();
+    lastMsg.isTyping = false;
+    isTyping.value = false;
+    
+    currentQuestions.value = props.questions.filter((q) => !usedQuestionIds.value.has(q.id));
   }
 }
 
-function finishTyping(msg: ChatMessage, question: DemoQuestion) {
+function finishTyping(msg: ChatMessage) {
   msg.isTyping = false;
   isTyping.value = false;
   if (typeTimer) {
     clearInterval(typeTimer);
     typeTimer = null;
   }
-  if (question.followUps && question.followUps.length > 0) {
-    currentQuestions.value = [...question.followUps];
-  }
+  currentQuestions.value = props.questions.filter((q) => !usedQuestionIds.value.has(q.id));
 }
 
 onBeforeUnmount(() => {
@@ -169,10 +171,9 @@ defineExpose({ askQuestion });
         <!-- User message -->
         <div v-if="msg.role === 'user'" class="flex justify-end">
           <div
-            class="max-w-[85%] rounded-3xl rounded-tr-md bg-emerald-600 px-5 py-3 text-base font-medium text-white shadow-md border border-emerald-500/50"
-          >
-            {{ msg.content }}
-          </div>
+            class="prose-user max-w-[85%] rounded-3xl rounded-tr-md bg-emerald-600 px-5 py-3 text-base font-medium text-white shadow-md border border-emerald-500/50"
+            v-html="renderMarkdown(msg.content)"
+          />
         </div>
 
         <!-- Assistant message -->
@@ -191,7 +192,7 @@ defineExpose({ askQuestion });
               />
             </div>
             <div
-              class="prose-sm prose max-w-none rounded-3xl rounded-tl-md border border-emerald-100 bg-white/90 px-6 py-4 text-base leading-relaxed text-gray-800 shadow-sm"
+              class="prose-assistant max-w-none rounded-3xl rounded-tl-md border border-emerald-100 bg-white/90 px-6 py-4 text-base leading-relaxed text-gray-800 shadow-sm"
               v-html="renderMarkdown(msg.content)"
             />
           </div>
@@ -252,8 +253,8 @@ defineExpose({ askQuestion });
           </div>
         </div>
 
-        <!-- Right: Stop/Clear Buttons -->
-        <div v-if="hasStarted" class="flex shrink-0 gap-2 items-end justify-end mt-2 sm:mt-0">
+        <!-- Right: Stop or Clear Button -->
+        <div class="flex shrink-0 gap-2 items-end justify-end mt-2 sm:mt-0">
           <button
             v-if="isTyping"
             @click="stopTyping"
@@ -263,11 +264,13 @@ defineExpose({ askQuestion });
             Stop
           </button>
           <button
-            v-if="!isTyping"
+            v-else-if="messages.length > 0"
             @click="resetChat"
-            class="flex items-center gap-1.5 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-600 shadow-sm transition-all hover:bg-gray-50 hover:shadow"
+            class="flex items-center gap-1.5 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-600 shadow-sm transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow"
           >
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
             Clear
           </button>
         </div>
@@ -278,61 +281,62 @@ defineExpose({ askQuestion });
 </template>
 
 <style scoped>
-.prose-sm :deep(h1),
-.prose-sm :deep(h2),
-.prose-sm :deep(h3) {
+/* Assistant Message Markdown Styles */
+.prose-assistant :deep(h1),
+.prose-assistant :deep(h2),
+.prose-assistant :deep(h3) {
   color: #111827;
   margin-top: 0.75em;
   margin-bottom: 0.25em;
   font-weight: 700;
 }
-.prose-sm :deep(h1) { font-size: 1.1em; }
-.prose-sm :deep(h2) { font-size: 1.05em; }
-.prose-sm :deep(h3) { font-size: 1em; }
+.prose-assistant :deep(h1) { font-size: 1.1em; }
+.prose-assistant :deep(h2) { font-size: 1.05em; }
+.prose-assistant :deep(h3) { font-size: 1em; }
 
-.prose-sm :deep(p) {
+.prose-assistant :deep(p) {
   margin-top: 0.4em;
   margin-bottom: 0.4em;
 }
 
-.prose-sm :deep(strong) {
+.prose-assistant :deep(strong) {
   color: #1f2937;
   font-weight: 700;
 }
 
-.prose-sm :deep(ul),
-.prose-sm :deep(ol) {
+.prose-assistant :deep(ul),
+.prose-assistant :deep(ol) {
   padding-left: 1.5em;
   margin-top: 0.4em;
   margin-bottom: 0.4em;
 }
 
-.prose-sm :deep(li) {
+.prose-assistant :deep(li) {
   margin-top: 0.2em;
   margin-bottom: 0.2em;
 }
 
-.prose-sm :deep(table) {
+.prose-assistant :deep(table) {
   width: 100%;
   border-collapse: collapse;
   margin: 0.5em 0;
   font-size: 0.9em;
 }
 
-.prose-sm :deep(th),
-.prose-sm :deep(td) {
+.prose-assistant :deep(th),
+.prose-assistant :deep(td) {
   border: 1px solid rgba(16, 185, 129, 0.2);
   padding: 0.5em 0.75em;
   text-align: left;
 }
 
-.prose-sm :deep(th) {
+.prose-assistant :deep(th) {
   background: rgba(16, 185, 129, 0.1);
   font-weight: 700;
   color: #065f46;
 }
 
-.prose-sm :deep(code) {
+.prose-assistant :deep(code) {
   background: rgba(16, 185, 129, 0.08);
   padding: 0.15em 0.4em;
   border-radius: 0.3em;
@@ -341,7 +345,7 @@ defineExpose({ askQuestion });
   color: #047857;
 }
 
-.prose-sm :deep(pre) {
+.prose-assistant :deep(pre) {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   padding: 0.75em;
@@ -350,7 +354,86 @@ defineExpose({ askQuestion });
   margin: 0.5em 0;
 }
 
-.prose-sm :deep(pre code) {
+.prose-assistant :deep(pre code) {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* User Message Markdown Styles */
+.prose-user :deep(h1),
+.prose-user :deep(h2),
+.prose-user :deep(h3) {
+  color: #ffffff;
+  margin-top: 0.75em;
+  margin-bottom: 0.25em;
+  font-weight: 700;
+}
+.prose-user :deep(h1) { font-size: 1.1em; }
+.prose-user :deep(h2) { font-size: 1.05em; }
+.prose-user :deep(h3) { font-size: 1em; }
+
+.prose-user :deep(p) {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+}
+
+.prose-user :deep(strong) {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.prose-user :deep(ul),
+.prose-user :deep(ol) {
+  padding-left: 1.5em;
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
+}
+
+.prose-user :deep(li) {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
+
+.prose-user :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5em 0;
+  font-size: 0.9em;
+}
+
+.prose-user :deep(th),
+.prose-user :deep(td) {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.prose-user :deep(th) {
+  background: rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.prose-user :deep(code) {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.15em 0.4em;
+  border-radius: 0.3em;
+  font-size: 0.9em;
+  font-family: "JetBrains Mono", monospace;
+  color: #ffffff;
+}
+
+.prose-user :deep(pre) {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75em;
+  border-radius: 0.5em;
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+
+.prose-user :deep(pre code) {
   background: none;
   padding: 0;
   color: inherit;

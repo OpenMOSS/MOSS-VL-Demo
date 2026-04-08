@@ -13,8 +13,10 @@ defineEmits<{
 <template>
   <button
     :disabled="disabled"
+    :title="text"
     :class="[
       'rounded-2xl border px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2',
+      'max-w-full sm:max-w-[300px] truncate',
       used
         ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-default shadow-none'
         : disabled
