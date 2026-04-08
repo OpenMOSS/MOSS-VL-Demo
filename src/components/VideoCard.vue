@@ -11,8 +11,17 @@ defineProps<{
     :to="{ name: 'demo', params: { id: video.id } }"
     class="group block overflow-hidden rounded-2xl border border-emerald-100 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-900/10 hover:-translate-y-1"
   >
-    <div class="relative aspect-video overflow-hidden">
+    <div class="relative aspect-video overflow-hidden bg-emerald-900/10">
+      <!-- Use video element for thumbnail when no image is provided -->
+      <video
+        v-if="!video.thumbnailUrl"
+        :src="video.videoUrl"
+        preload="metadata"
+        muted
+        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+      />
       <img
+        v-else
         :src="video.thumbnailUrl"
         :alt="video.title"
         class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"

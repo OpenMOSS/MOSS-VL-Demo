@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick, onBeforeUnmount, computed } from "vue";
+import { ref, nextTick, onBeforeUnmount, watch } from "vue";
 import { marked } from "marked";
 import type { DemoQuestion } from "@/data/demos";
 import QuestionButton from "@/components/QuestionButton.vue";
@@ -16,13 +16,27 @@ const props = defineProps<{
 
 const messages = ref<ChatMessage[]>([]);
 const isTyping = ref(false);
-const usedQuestionIds = ref(new Set<string>());
 const chatContainer = ref<HTMLDivElement>();
+const currentQuestions = ref<DemoQuestion[]>([]);
+const hasStarted = ref(false);
+const activeQuestion = ref<DemoQuestion | null>(null);
 let typeTimer: ReturnType<typeof setInterval> | null = null;
 
-const availableQuestions = computed(() =>
-  props.questions.filter((q) => !usedQuestionIds.value.has(q.id))
-);
+watch(() => props.questions, () => {
+  resetChat();
+}, { immediate: true });
+
+function resetChat() {
+  messages.value = [];
+  isTyping.value = false;
+  hasStarted.value = false;
+  activeQuestion.value = null;
+  currentQuestions.value = [...props.questions];
+  if (typeTimer) {
+    clearInterval(typeTimer);
+    typeTimer = null;
+  }
+}
 
 function scrollToBottom() {
   nextTick(() => {
@@ -39,7 +53,10 @@ function renderMarkdown(text: string): string {
 function askQuestion(question: DemoQuestion) {
   if (isTyping.value) return;
 
-  usedQuestionIds.value.add(question.id);
+  hasStarted.value = true;
+  activeQuestion.value = question;
+  // Hide current questions immediately
+  currentQuestions.value = [];
 
   messages.value.push({
     role: "user",
@@ -48,34 +65,55 @@ function askQuestion(question: DemoQuestion) {
 
   scrollToBottom();
 
-  const assistantMsg: ChatMessage = {
+  messages.value.push({
     role: "assistant",
     content: "",
     isTyping: true,
-  };
-  messages.value.push(assistantMsg);
+  });
+  // Get the reactive proxy reference — mutating this triggers Vue re-renders
+  const reactiveMsg = messages.value[messages.value.length - 1];
   isTyping.value = true;
 
   let charIndex = 0;
   const answer = question.answer;
-  const CHAR_DELAY_MS = 25; // slightly slower typing for realistic effect
+  const CHAR_DELAY_MS = 25;
 
   typeTimer = setInterval(() => {
     if (charIndex < answer.length) {
       let step = 1;
       if (answer[charIndex] === "\n") step = 2;
-      assistantMsg.content = answer.slice(0, charIndex + step);
+      reactiveMsg.content = answer.slice(0, charIndex + step);
       charIndex += step;
       scrollToBottom();
     } else {
-      assistantMsg.isTyping = false;
-      isTyping.value = false;
-      if (typeTimer) {
-        clearInterval(typeTimer);
-        typeTimer = null;
-      }
+      finishTyping(reactiveMsg, question);
     }
   }, CHAR_DELAY_MS);
+}
+
+function stopTyping() {
+  if (typeTimer) {
+    clearInterval(typeTimer);
+    typeTimer = null;
+  }
+  const lastMsg = messages.value[messages.value.length - 1];
+  if (lastMsg && lastMsg.isTyping && activeQuestion.value) {
+    lastMsg.content = activeQuestion.value.answer;
+    finishTyping(lastMsg, activeQuestion.value);
+    scrollToBottom();
+  }
+}
+
+function finishTyping(msg: ChatMessage, question: DemoQuestion) {
+  msg.isTyping = false;
+  isTyping.value = false;
+  if (typeTimer) {
+    clearInterval(typeTimer);
+    typeTimer = null;
+  }
+  if (question.followUps && question.followUps.length > 0) {
+    currentQuestions.value = [...question.followUps];
+  }
 }
 
 onBeforeUnmount(() => {
@@ -161,27 +199,80 @@ defineExpose({ askQuestion });
       </div>
     </div>
 
-    <!-- Question buttons floating at the bottom -->
-    <div class="border-t border-emerald-100 bg-white/70 backdrop-blur-md px-5 py-4 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
-      <p class="mb-3 text-xs font-bold tracking-widest uppercase text-emerald-800/60">
-        Suggested questions
-      </p>
-      <div class="flex flex-wrap gap-2.5">
-        <QuestionButton
-          v-for="q in questions"
-          :key="q.id"
-          :text="q.text"
-          :disabled="isTyping"
-          :used="usedQuestionIds.has(q.id)"
-          @click="askQuestion(q)"
-        />
+    <!-- Action Area (Questions & Controls) floating at the bottom -->
+    <div class="border-t border-emerald-100 bg-white/70 backdrop-blur-md px-5 py-4 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] min-h-[96px] flex flex-col justify-center">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        
+        <!-- Left: Questions or Status -->
+        <div class="flex-1">
+          <div v-if="!hasStarted">
+            <p class="mb-3 text-xs font-bold tracking-widest uppercase text-emerald-800/60">
+              Suggested questions
+            </p>
+            <div class="flex flex-wrap gap-2.5">
+              <QuestionButton
+                v-for="q in currentQuestions"
+                :key="q.id"
+                :text="q.text"
+                :disabled="false"
+                :used="false"
+                @click="askQuestion(q)"
+              />
+            </div>
+          </div>
+          
+          <div v-else>
+            <div v-if="isTyping" class="flex items-center gap-2 text-sm font-medium text-emerald-600">
+              <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              </span>
+              Model is typing...
+            </div>
+            
+            <div v-else-if="currentQuestions.length > 0">
+              <p class="mb-3 text-xs font-bold tracking-widest uppercase text-emerald-800/60">
+                Follow-up questions
+              </p>
+              <div class="flex flex-wrap gap-2.5">
+                <QuestionButton
+                  v-for="q in currentQuestions"
+                  :key="q.id"
+                  :text="q.text"
+                  :disabled="false"
+                  :used="false"
+                  @click="askQuestion(q)"
+                />
+              </div>
+            </div>
+            
+            <div v-else class="text-sm font-medium text-gray-500">
+              Dialogue complete. Return to the gallery or clear chat to try again.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Stop/Clear Buttons -->
+        <div v-if="hasStarted" class="flex shrink-0 gap-2 items-end justify-end mt-2 sm:mt-0">
+          <button
+            v-if="isTyping"
+            @click="stopTyping"
+            class="flex items-center gap-1.5 rounded-2xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-bold text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow"
+          >
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><rect x="5" y="5" width="10" height="10" rx="2" /></svg>
+            Stop
+          </button>
+          <button
+            v-if="!isTyping"
+            @click="resetChat"
+            class="flex items-center gap-1.5 rounded-2xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-600 shadow-sm transition-all hover:bg-gray-50 hover:shadow"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            Clear
+          </button>
+        </div>
+
       </div>
-      <p
-        v-if="availableQuestions.length === 0 && !isTyping"
-        class="mt-3 text-sm font-medium text-gray-500"
-      >
-        All questions explored. Return to the gallery to try another video.
-      </p>
     </div>
   </div>
 </template>

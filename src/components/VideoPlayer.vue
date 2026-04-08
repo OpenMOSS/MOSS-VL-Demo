@@ -10,7 +10,7 @@ defineProps<{
   <div class="overflow-hidden rounded-2xl border border-emerald-200 bg-black shadow-lg">
     <video
       :src="src"
-      :poster="poster"
+      :poster="poster || undefined"
       controls
       preload="metadata"
       class="aspect-video w-full bg-black object-contain"
