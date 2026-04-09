@@ -199,7 +199,7 @@ export const demos: DemoVideo[] = [
   {
     id: "xialong-shanshui",
     title: "霞胧山水",
-    description: "这是一张暮色下的山水照。",
+    description: "这是对暮色下山水的艺术描绘。",
     type: "image",
     imageUrl: hfUrl("霞胧山水.png"),
     thumbnailUrl: "",
@@ -218,7 +218,7 @@ export const demos: DemoVideo[] = [
   {
     id: "animals-multi-image",
     title: "多图动物描述",
-    description: "这是一个多图展示的样例，包含了暮色山水等画面，用于测试模型对多张图像序列的理解能力。",
+    description: "这是一个对多张动物图片对比描述的展示样例",
     type: "multi-image",
     imageUrls: [
       hfUrl("cat.png"),
