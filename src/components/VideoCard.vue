@@ -59,7 +59,19 @@ defineProps<{
             <path d="M8 5v14l11-7z" />
           </svg>
           <svg
-            v-else-if="video.type === 'image' || video.type === 'ocr'"
+            v-else-if="video.type === 'ocr'"
+            class="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+          >
+            <!-- OCR / text scanning icon -->
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h2a2 2 0 012 2v2M21 5h-2a2 2 0 00-2 2v2M3 19h2a2 2 0 002-2v-2M21 19h-2a2 2 0 01-2-2v-2" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 10h6m-6 4h6" />
+          </svg>
+          <svg
+            v-else-if="video.type === 'image'"
             class="h-6 w-6"
             fill="none"
             stroke="currentColor"

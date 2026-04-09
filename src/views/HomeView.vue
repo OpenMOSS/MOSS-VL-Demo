@@ -63,25 +63,31 @@ function handleWheel(e: WheelEvent) {
     return;
   }
 
-  // Handle nested scrolling inside the video grid container
+  // When cursor is inside the grid container, keep scroll trapped there
   if (videoGridContainer && videoGridContainer.contains(e.target as Node)) {
-    if (e.deltaY < 0 && videoGridContainer.scrollTop > 0) {
-      return; // allow default inner scroll
+    const canScrollUp = videoGridContainer.scrollTop > 0;
+    const canScrollDown = Math.ceil(videoGridContainer.scrollTop) < videoGridContainer.scrollHeight - videoGridContainer.clientHeight;
+
+    if (e.deltaY < 0 && canScrollUp) {
+      return; // allow native inner scroll up
     }
-    if (e.deltaY > 0 && Math.ceil(videoGridContainer.scrollTop) < videoGridContainer.scrollHeight - videoGridContainer.clientHeight) {
-      return; // allow default inner scroll
+    if (e.deltaY > 0 && canScrollDown) {
+      return; // allow native inner scroll down
     }
+
+    // At boundary: absorb the event — do NOT propagate to page-level scroll
+    e.preventDefault();
+    return;
   }
 
-  const threshold = window.innerHeight * 0.2; // 20% of screen height
+  // Page-level scroll only when cursor is OUTSIDE the grid container
+  const threshold = window.innerHeight * 0.2;
   const isAtTop = container.scrollTop < threshold;
   
-  // If we are at the top and the user scrolls down, auto-scroll to grid
   if (e.deltaY > 0 && isAtTop) {
     e.preventDefault();
     scrollToGrid();
   } 
-  // If we are at the grid and the user scrolls up, auto-scroll to top
   else if (e.deltaY < 0 && container.scrollTop <= grid.offsetTop + 10) {
     e.preventDefault();
     scrollToTop();
@@ -106,16 +112,24 @@ function handleTouchMove(e: TouchEvent) {
   const touchEndY = e.touches[0].clientY;
   const deltaY = touchStartY - touchEndY; // positive means scrolling down
   
-  // Handle nested scrolling inside the video grid container
+  // When finger is inside the grid container, keep scroll trapped there
   if (videoGridContainer && videoGridContainer.contains(e.target as Node)) {
-    if (deltaY < 0 && videoGridContainer.scrollTop > 0) {
-      touchStartY = touchEndY; // update start position
-      return; // allow default inner scroll
-    }
-    if (deltaY > 0 && Math.ceil(videoGridContainer.scrollTop) < videoGridContainer.scrollHeight - videoGridContainer.clientHeight) {
+    const canScrollUp = videoGridContainer.scrollTop > 0;
+    const canScrollDown = Math.ceil(videoGridContainer.scrollTop) < videoGridContainer.scrollHeight - videoGridContainer.clientHeight;
+
+    if (deltaY < 0 && canScrollUp) {
       touchStartY = touchEndY;
-      return; // allow default inner scroll
+      return; // allow native inner scroll
     }
+    if (deltaY > 0 && canScrollDown) {
+      touchStartY = touchEndY;
+      return; // allow native inner scroll
+    }
+
+    // At boundary: absorb — do NOT propagate to page-level scroll
+    e.preventDefault();
+    touchStartY = touchEndY;
+    return;
   }
 
   const threshold = window.innerHeight * 0.2;
@@ -203,7 +217,7 @@ onUnmounted(() => {
             model.
           </p>
         </div>
-        <div id="video-grid-container" class="max-h-[60vh] overflow-y-auto rounded-3xl bg-white/30 backdrop-blur-md border border-white/40 shadow-xl p-6 hide-scrollbar">
+        <div id="video-grid-container" class="max-h-[60vh] overflow-y-auto rounded-3xl bg-white/30 backdrop-blur-md border border-white/40 shadow-xl p-6 hide-scrollbar" style="overscroll-behavior-y: contain;">
           <VideoGrid :videos="demos" />
         </div>
       </div>

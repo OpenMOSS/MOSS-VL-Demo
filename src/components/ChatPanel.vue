@@ -481,8 +481,12 @@ defineExpose({ askQuestion, resetChat });
 .prose-user :deep(h3) { font-size: 1em; }
 
 .prose-user :deep(p) {
-  margin-top: 0.4em;
-  margin-bottom: 0.4em;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.prose-user :deep(p:not(:last-child)) {
+  margin-bottom: 0.5em;
 }
 
 .prose-user :deep(strong) {
